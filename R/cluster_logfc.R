@@ -17,6 +17,7 @@ if (is.factor(cluster.ids)==F) {
 }
 
 cluster.cells <- vector(mode="list",length=length(levels(cluster.ids)))
+names(cluster.cells) <- levels(cluster.ids)
 
 for (i in 1:length(cluster.cells)) {
 	cluster.cells[[i]] <- colnames(expr.mat)[which(cluster.ids==i)]

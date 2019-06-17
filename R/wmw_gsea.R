@@ -74,7 +74,7 @@ results[[z]]$statistics <- gene.set.statistics
 
 p.val.res <- data.frame(lapply(results,function(x) x[1]))
 statistics.res <- data.frame(lapply(results,function(x) x[2]))
-colnames(p.val.res) <- colnames(statistics.res) <- paste("Cluster_",seq(1,length(cluster.cells),1),sep="")
+colnames(p.val.res) <- colnames(statistics.res) <- names(cluster.cells)
 
 return(list("GSEA_statistics"=statistics.res,"GSEA_p_values"=p.val.res))
 
