@@ -13,7 +13,10 @@ Depends:
 Suggests:
   Seurat (>= 2.3.0),
   GSEABase (>= 1.46.0),
-  heatmap3 (>= 1.1.0)
+  heatmap3 (>= 1.1.0),
+  knitr (>= 1.20),
+  rmarkdown (>= 1.10)
+VignetteBuilder: knitr
 License: CCO
 Encoding: UTF-8
 LazyData: true
