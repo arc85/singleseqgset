@@ -1,0 +1,195 @@
+---
+title: "singleseqgset: Single-cell RNAseq gene set enrichment analysis"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using DRAGON for scRNAseq clustering}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+# Introduction
+
+Gene set enrichment analysis is a ubiquitious tool used for extracting biologically meaningful information from a genomic dataset. There are many different flavors of tools available for gene set enrichment analysis, but the one most frequently encountered in the wild is the pioneering work of Subramanian et al, PNAS 2005.
+
+They key concept in any gene set enrichment analysis is to compare a metric (e.g. log fold change in gene expression between groups) for genes within a set versus genes outside of a set. Gene sets can be obtained from many locations, including the Molecular Signatures Database (MSigDB) at the Broad and The Gene Ontology Resource. It is important to select gene sets that are best able to answer the biological question(s) at hand. For example, you generally would not use a gene set from the Broad's C7 (Immunologic Gene Sets) to answer questions about the development of neurons (unless you have a really good reason!).
+
+The approch to gene set enrichment that I have developed here is derived from the work of Di Wu and Gordon K Smyth, Nucleic Acids Research 2012. Wu and Smyth developed a Correlation Adjusted MEan RAnk gene set test (CAMERA). CAMERA is a competitive gene set enrichment test that controls for intergene correlation within the gene set. I have chosen to use CAMERA because it does not rely on the assumption of the independence of genes (since we know that genes often have structured co-expression patterns), nor does it rely on permutations of gene labels or resampling of test samples. CAMERA controls for inter-gene correlation by generating a variance inflation factor based on the degree of inter-gene correlation, and incorporates this variance inflation into the a non-parametric Wilcoxon rank sum test. I recommend checking out the CAMERA publication if you are into the math.
+
+This vignette demonstrates a standard use of singleseqgset on simulated data. We will go through the following steps:
+
+- Simulate expression data using the R package *splatter*
+- Add specific gene sets to our simulated data
+- Process our data using a standard Seurat workflow (v.2.3.4)
+- Use singleseqgset to perform gene set enrichment analysis
+- Plot the results in a heatmap
+
+# Simulate data using splatter
+
+First, we simulate data to use with splatter.
+
+```{r}
+suppressMessages({
+library(splatter)
+library(Seurat)
+library(GSEABase)
+library(singleseqgset)
+library(heatmap3)
+})
+
+#Create parameters and simulate data
+sc.params <- newSplatParams(nGenes=1000,batchCells=5000)
+sim.groups <- splatSimulate(params=sc.params,method="groups",group.prob=c(0.4,0.2,0.3,0.1),de.prob=c(0.20,0.20,0.1,0.3),verbose=F)
+sim.groups #Check out the SingleCellExperiment object with simulated dataset
+colData(sim.groups) #The colData column "Group" contains the groups of simulated cells
+```
+
+We have created some simulated data consisting of 4 clusters, with various fractions of genes differentially expressed between clusters.
+
+# Add gene sets to simulated clusters
+
+Next, we will add some expression data for specific genes sets to some of the clusters.
+
+```{r}
+sim.counts <- assays(sim.groups)$counts
+groups <- colData(sim.groups)$Group
+names(groups) <- rownames(colData(sim.groups))
+table(groups)
+```
+
+Now we have a count matrix of simulated data, and we know which cells are in each group via "groups". We will next read in the Hallmark Gene Sets using the GSEABase package. The Hallmark gene sets can be download directly from the Broad's website: http://software.broadinstitute.org/gsea/msigdb/index.jsp. Just make sure to choose the proper gene annotation style for your project (i.e. either gene symbols or entrez gene IDs; here we just gene symbols).
+
+```{r}
+data(h.sets.collection) #read in the collection
+#Ordinarily, you would download these files locally and read them in using the getGmt function from the GSEABase package
+#We have included the h.sets.collection for this Vignette
+h.sets <- geneIds(h.sets.collection) #Convert from a GeneSetCollection to a list
+h.sets[1:2] #Check out the first 2 gene sets
+```
+
+We are going to assign 5 gene sets to be exclusively expressed in each cluster. We will select these 20 sets randomly, and each gene will be drawn from a zero-inflated Poisson distribution with the probability of success equal to 50% and a lambda value of 10. This will simulate moderate dropout and relatively low gene counts of expression. Please pardon the dense code for simulating gene sets!
+
+```{r,fig.width=7,fig.height=7,fig.align="center"}
+
+sets.to.use <- sample(seq(1,50,1),20,replace=F)
+sets.and.groups <- data.frame(set=sets.to.use,group=paste("Group",rep(1:4,each=5),sep=""))
+
+for (i in 1:nrow(sets.and.groups)) {
+
+  set.to.use <- sets.and.groups[i,"set"]
+  group.to.use <- sets.and.groups[i,"group"]
+  gene.set.length <- length(h.sets[[set.to.use]])
+  blank.matrix <- matrix(0,ncol=ncol(sim.counts),nrow=gene.set.length)
+  rownames(blank.matrix) <- h.sets[[sets.to.use[i]]]
+  matching <- rownames(blank.matrix) %in% rownames(sim.counts)
+
+  if (any(matching==TRUE)) {
+
+    matching.genes <- rownames(blank.matrix)[matching]
+    nonmatching.genes <- setdiff(rownames(blank.matrix),matching.genes)
+    blank.matrix <- blank.matrix[!matching,]
+    sim.counts <- rbind(sim.counts,blank.matrix)
+
+  } else {
+
+    sim.counts <- rbind(sim.counts,blank.matrix)
+    matching.genes <- rownames(blank.matrix)
+
+  }
+
+  group.cells <- colnames(sim.counts)[groups==group.to.use]
+
+  for (z in group.cells) {
+
+    if (any(matching==TRUE)) {
+
+      sim.counts[matching.genes,z] <- ifelse(rbinom(length(matching.genes),size=1,prob=0.5)>0,0,rpois(length(matching.genes),lambda=10))
+      sim.counts[nonmatching.genes,z] <- ifelse(rbinom(length(nonmatching.genes),size=1,prob=0.5)>0,0,rpois(length(nonmatching.genes),lambda=10))
+
+    } else {
+
+    sim.counts[matching.genes,z] <- ifelse(rbinom(length(matching.genes),size=1,prob=0.5)>0,0,rpois(length(matching.genes),lambda=10))
+
+    }
+  }
+
+}
+
+#Here, we will check out the sum of expression for the first gene set
+len.set1 <- length(h.sets[[sets.to.use[[1]]]])
+plot(apply(sim.counts[1001:(1000+len.set1),],2,sum),xlim=c(0,5000),xlab="Cells",ylab="Sum of Gene Set 1 Expression")
+```
+
+We have successfully modified the simulated count matrix to contain gene sets of interest in specific clusters. For example, we know that Group1 cells should show gene set enrichment for:
+
+`r names(h.sets)[sets.to.use[1:5]]`
+
+# Seurat workflow on simulated data
+
+Now that we've simlulated some data, we will pass it through a standard Seurat workflow (using v2.3.4) to visualize our simulated data. We will ignore the gene sets we added to the count matrix, and will pretend that our first 1000 genes are highly variable genes.
+
+```{r,fig.width=7,fig.height=7,fig.align="center"}
+#Pass simulated data to Seurat
+ser <- CreateSeuratObject(raw.data=sim.counts)
+
+#Normal Seurat workflow
+ser <- NormalizeData(ser)
+ser@var.genes <- rownames(ser@raw.data)[1:1000]
+ser <- ScaleData(ser,genes.use=ser@var.genes)
+
+#We will pretend like the 1000 simulated genes are the "variable genes",
+#and we will skip FindVariableGenes from Seurat
+ser <- RunPCA(ser,pc.genes=ser@var.genes,do.print=FALSE)
+
+PCElbowPlot(ser)
+
+#Looks like the first 4 PCs capture most of the variance
+#We will include the first 5
+
+ser <- RunTSNE(ser,dims.use=1:5)
+
+#Add the simulated data IDs to the Seurat object
+data.to.add <- colData(sim.groups)$Group
+names(data.to.add) <- ser@cell.names
+ser <- AddMetaData(ser,metadata=data.to.add,col.name="real_id")
+ser <- SetAllIdent(ser,id="real_id")
+
+#We will skip clustering with Seurat because we already know the true clusters IDs
+
+TSNEPlot(ser,group.by="real_id")
+
+```
+
+# Use singleseqgset to perform gene set enrichment analysis
+
+We will now get to the point of the vignette: gene set enrichment analysis!
+
+First, we will calculate our metric for the gene set enrichment test, which in this case is log fold change between clusters for all genes. We choose to use the log-normalized data that have been corrected for library size. This is stored in the "@data" slot of Seurat.
+
+```{r}
+logfc.data <- logFC(cluster.ids=ser@meta.data$real_id,expr.mat=ser@data)
+names(logfc.data)
+```
+
+The logFC function returns a list of length 2, containing the cells in each cluster and the log fold changes in genes between the cluster of interest and all other clusters. This data is required for the next step, where we calcuate enrichment scores and p values.
+
+```{r}
+gse.res <- wmw_gsea(expr.mat=as.matrix(ser@data),cluster.cells=logfc.data[[1]],log.fc.cluster=logfc.data[[2]],gene.sets=h.sets)
+names(gse.res)
+```
+
+This function returns a two item list, the first containing the test statistics "GSEA_statistics" and the second containing the p values "GSEA_p_values". We can plot these results as a heatmap the visualize differentially regulated gene sets.
+
+```{r,fig.width=10,fig.height=7,fig.align="center"}
+res.stats <- gse.res[["GSEA_statistics"]]
+res.pvals <- gse.res[["GSEA_p_values"]]
+
+res.pvals <- apply(res.pvals,2,p.adjust,method="fdr") #Correct for multiple comparisons
+
+res.stats[order(res.stats[,1],decreasing=TRUE)[1:10],] #Top gene sets enriched by z scores
+res.pvals[order(res.stats[,1],decreasing=TRUE)[1:10],] #Top gene sets by p values
+names(h.sets)[sets.to.use[1:5]] #Compare to the simulate sets we created
+
+#Plot the z scores with heatmap3
+heatmap3(res.stats,Colv=NA,cexRow=0.5,cexCol=1,scale="row")
+```
+
+Congratulations, you have performed your first gene set enrichment analysis with singleseqgset!

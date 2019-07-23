@@ -1,6 +1,6 @@
 Package: singleseqgset
 Title: Single-cell Gene Set Enrichment Analysis
-Version: 0.1.0.9000
+Version: 0.1.1.9000
 Authors@R:
     person(given = "Anthony",
            family = "Cillo",
@@ -8,7 +8,12 @@ Authors@R:
            email = "arc85@pitt.edu")
 Description: This package takes single-cell gene expression data and lists of gene sets, and tests whether specific clusters have enrichment for the given gene sets compared to other clusters. To accomplish this, we implement a Wilcoxon Mann Whitney correlated-corrected statistic inspired by CAMERA to compare genes within the gene set versus genes outside of the gene set (see Camera: a competitive gene set test accounting for inter-gene correlation by Wu and Smyth, Nucleic Acids Research 2012 for more information).
 Depends:
-  R (>= 3.4.0)
+  R (>= 3.4.0),
+  Matrix (>= 1.2.0)
+Suggests:
+  Seurat (>= 2.3.0),
+  GSEABase (>= 1.46.0),
+  heatmap3 (>= 1.1.0)
 License: CCO
 Encoding: UTF-8
 LazyData: true
