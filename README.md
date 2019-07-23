@@ -1,4 +1,4 @@
-## singleseqgset: Single-cell RNAseq gene set enrichment analysis**
+## singleseqgset: Single-cell RNAseq gene set enrichment analysis
 
 singleseqget is an R package that facilitates gene set enrichment analysis.
 
