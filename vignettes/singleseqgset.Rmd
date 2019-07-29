@@ -172,7 +172,7 @@ names(logfc.data)
 The logFC function returns a list of length 2, containing the cells in each cluster and the log fold changes in genes between the cluster of interest and all other clusters. This data is required for the next step, where we calcuate enrichment scores and p values.
 
 ```{r}
-gse.res <- wmw_gsea(expr.mat=as.matrix(ser@data),cluster.cells=logfc.data[[1]],log.fc.cluster=logfc.data[[2]],gene.sets=h.sets)
+gse.res <- wmw_gsea(expr.mat=ser@data,cluster.cells=logfc.data[[1]],log.fc.cluster=logfc.data[[2]],gene.sets=h.sets)
 names(gse.res)
 ```
 

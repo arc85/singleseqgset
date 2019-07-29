@@ -90,6 +90,14 @@ p.val.res <- data.frame(lapply(results,function(x) x[1]))
 statistics.res <- data.frame(lapply(results,function(x) x[2]))
 colnames(p.val.res) <- colnames(statistics.res) <- names(cluster.cells)
 
+zero.index <- which(apply(statistics.res,1,function(x) all(x==0))==T)
+	if (length(zero.index)>0) {
+		print(paste("Removed ",length(zero.index)," rows with all z-scores equal to zero.",sep=""))
+		statistics.res <- statistics.res[-zero.index,]
+		p.val.res <- p.val.res[-zero.index,]
+	}
+
+
 return(list("GSEA_statistics"=statistics.res,"GSEA_p_values"=p.val.res))
 
 }
