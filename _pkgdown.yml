@@ -21,7 +21,7 @@ navbar:
 
 reference:
   - title: Exported functions
-    desc: singleseqgset has two simple functions to facilitate gene set enrichment analysis:
+    desc: singleseqgset has two simple functions to facilitate gene set enrichment analysis
     contents:
     - cluster_logfc
     - wmw_gsea

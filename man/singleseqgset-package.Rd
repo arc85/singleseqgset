@@ -9,7 +9,7 @@
 This package takes single-cell gene expression data and lists of gene sets, and tests whether specific clusters have enrichment for the given gene sets compared to other clusters. To accomplish this, we implement a Wilcoxon Mann Whitney correlated-corrected statistic inspired by CAMERA to compare genes within the gene set versus genes outside of the gene set (see Camera: a competitive gene set test accounting for inter-gene correlation by Wu and Smyth, Nucleic Acids Research 2012 for more information).
 }
 \author{
-\strong{Maintainer}: Anthony Cillo \email{arc85@pitt.edu}
+\strong{Maintainer}: Anthony Cillo \email{arc85@pitt.edu} (0000-0002-3213-3129)
 
 }
 \keyword{internal}
