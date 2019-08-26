@@ -1,0 +1,32 @@
+navbar:
+  structure:
+    left:
+    - home
+    - intro
+    - reference
+    - articles
+    - tutorials
+    - news
+    right: github
+  components:
+    home:
+      icon: fa-home fa-lg
+      href: index.html
+    reference:
+      text: Reference
+      href: reference/index.html
+    intro:
+      text: Get started
+      href: articles/singleseqgset.html
+
+reference:
+  - title: Exported functions
+    desc: singleseqgset has two simple functions to facilitate gene set enrichment analysis:
+    contents:
+    - cluster_logfc
+    - wmw_gsea
+
+articles:
+- title: All vignettes
+  desc: ~
+  contents: '`singleseqgset`'
