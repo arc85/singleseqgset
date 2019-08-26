@@ -11,3 +11,7 @@ library(devtools)
 install_github("arc85/singleseqgset")
 library(singleseqgset)
 ```
+
+## Additional information
+
+For more information and the singleseqgset vignette, check out the singleseqgset website <https://arc85.github.io/singleseqgset/>.
