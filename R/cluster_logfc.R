@@ -27,30 +27,30 @@ for (i in names(cluster.cells)) {
 	cluster.cells[[i]] <- colnames(expr.mat)[which(cluster.ids==i)]
 }
 
-mean.cluster.exp <- vector(mode="list",length=length(cluster.cells))
-cluster.size <- vector(length=length(mean.cluster.exp))
-names(mean.cluster.exp) <- names(cluster.size) <- levels(cluster.ids)
-
-for (i in 1:length(cluster.cells)) {
-	mean.cluster.exp[[i]] <- apply(expr.mat[,cluster.cells[[i]]],1,mean)
-  cluster.size[i] <- ncol(expr.mat[,cluster.cells[[i]]])
-}
-
-sym_diff <- function(a,b) unique(setdiff(a,b),setdiff(b,a))
-
 log.fc.cluster <- vector(mode="list",length=length(cluster.cells))
 names(log.fc.cluster) <- names(cluster.cells)
 
+sym_diff <- function(a,b) { unique(setdiff(a,b),setdiff(b,a)) }
+
 for (i in 1:length(cluster.cells)) {
-  mean.clust <- mean.cluster.exp[[i]]
-	non.clust.names <- sym_diff(names(cluster.cells),names(cluster.cells)[i])
-  non.clust.means <- vector("list",length=length(non.clust.names))
 
-  for (z in 1:length(non.clust.names)) {
-    non.clust.means[[z]] <- mean.cluster.exp[[non.clust.names[z]]]/cluster.size[non.clust.names[z]]
-  }
+	other.clusters <- sym_diff(names(cluster.cells),names(cluster.cells)[i])
 
-	log.fc.cluster[[i]] <- mean.clust-Reduce("+",non.clust.means)/length(non.clust.means)
+	mean.cluster.exp <- apply(
+		expr.mat[,cluster.cells[[i]]],
+		1, function(x) {
+			log(mean(expm1(x))+1)
+	})
+
+	mean.exp.other <- apply(
+		expr.mat[,c(unlist(cluster.cells[other.clusters]))],
+		1, function(x) {
+			log(mean(expm1(x))+1)
+	})
+
+
+	log.fc.cluster[[i]] <- mean.cluster.exp-mean.exp.other
+
 }
 
 return(list("cluster.cells"=cluster.cells,"log.fc.cluster"=log.fc.cluster))
