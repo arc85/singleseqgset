@@ -1,6 +1,6 @@
 Package: singleseqgset
 Title: Single-cell Gene Set Enrichment Analysis
-Version: 0.1.1.9000
+Version: 0.1.2.9000
 Authors@R:
     person(given = "Anthony",
            family = "Cillo",
