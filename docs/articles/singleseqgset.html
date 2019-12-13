@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">singleseqgset</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2.9000</span>
       </span>
     </div>
 
@@ -268,51 +268,51 @@
 <a class="sourceLine" id="cb19-4" data-line-number="4">res.pvals &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/apply">apply</a></span>(res.pvals,<span class="dv">2</span>,p.adjust,<span class="dt">method=</span><span class="st">"fdr"</span>) <span class="co">#Correct for multiple comparisons</span></a>
 <a class="sourceLine" id="cb19-5" data-line-number="5"></a>
 <a class="sourceLine" id="cb19-6" data-line-number="6">res.stats[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/order">order</a></span>(res.stats[,<span class="dv">1</span>],<span class="dt">decreasing=</span><span class="ot">TRUE</span>)[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>],] <span class="co">#Top gene sets enriched by z scores</span></a></code></pre></div>
-<pre><code>##                                              Group1      Group2    Group3
-## HALLMARK_COMPLEMENT                       5.1574883 -0.09158513 -3.665589
-## HALLMARK_IL2_STAT5_SIGNALING              5.0244223 -2.35815436 -3.294866
-## HALLMARK_DNA_REPAIR                       4.7507909 -1.60640697 -2.170185
-## HALLMARK_UNFOLDED_PROTEIN_RESPONSE        4.4252275 -3.43523859 -2.794865
-## HALLMARK_APICAL_SURFACE                   3.3986861 -0.73663025  0.000000
-## HALLMARK_BILE_ACID_METABOLISM             0.0000000 -4.76489163 -3.147855
-## HALLMARK_NOTCH_SIGNALING                  0.0000000  0.00000000  0.000000
-## HALLMARK_PEROXISOME                       0.0000000  0.00000000 -2.281640
-## HALLMARK_REACTIVE_OXIGEN_SPECIES_PATHWAY  0.0000000  0.00000000 -1.624385
-## HALLMARK_ANGIOGENESIS                    -0.6272414 -1.75751992  0.000000
-##                                              Group4
-## HALLMARK_COMPLEMENT                      -7.6289460
-## HALLMARK_IL2_STAT5_SIGNALING             -3.6373362
-## HALLMARK_DNA_REPAIR                      -3.4498250
-## HALLMARK_UNFOLDED_PROTEIN_RESPONSE       -1.9363310
-## HALLMARK_APICAL_SURFACE                   0.0000000
-## HALLMARK_BILE_ACID_METABOLISM            -0.1628354
-## HALLMARK_NOTCH_SIGNALING                  0.5230535
-## HALLMARK_PEROXISOME                      -0.3289919
-## HALLMARK_REACTIVE_OXIGEN_SPECIES_PATHWAY -0.6633797
-## HALLMARK_ANGIOGENESIS                    -1.4628583</code></pre>
+<pre><code>##                                         Group1      Group2    Group3
+## HALLMARK_IL2_STAT5_SIGNALING       10.51698615 -7.55892580 -8.113191
+## HALLMARK_DNA_REPAIR                10.47159479 -7.62264059 -7.326454
+## HALLMARK_COMPLEMENT                10.17982979 -3.68698969 -8.347697
+## HALLMARK_UNFOLDED_PROTEIN_RESPONSE  9.54278550 -8.98321228 -7.275756
+## HALLMARK_APICAL_SURFACE             7.63384635 -5.70116613  0.000000
+## HALLMARK_ANGIOGENESIS               1.32886963 -0.91447563  0.000000
+## HALLMARK_HEDGEHOG_SIGNALING         0.77628519  0.66226233  0.000000
+## HALLMARK_KRAS_SIGNALING_UP          0.59844933 -0.20261236 -2.365948
+## HALLMARK_COAGULATION                0.57787404  9.03118414 -6.988972
+## HALLMARK_INFLAMMATORY_RESPONSE      0.05206778 -0.08661822 -1.260939
+##                                         Group4
+## HALLMARK_IL2_STAT5_SIGNALING        -8.4400626
+## HALLMARK_DNA_REPAIR                -10.3905166
+## HALLMARK_COMPLEMENT                -12.5780500
+## HALLMARK_UNFOLDED_PROTEIN_RESPONSE  -5.8693210
+## HALLMARK_APICAL_SURFACE              0.0000000
+## HALLMARK_ANGIOGENESIS               -0.6935659
+## HALLMARK_HEDGEHOG_SIGNALING          0.3350711
+## HALLMARK_KRAS_SIGNALING_UP          -1.1822606
+## HALLMARK_COAGULATION                -4.3269207
+## HALLMARK_INFLAMMATORY_RESPONSE      -3.3347607</code></pre>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">res.pvals[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/order">order</a></span>(res.stats[,<span class="dv">1</span>],<span class="dt">decreasing=</span><span class="ot">TRUE</span>)[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>],] <span class="co">#Top gene sets by p values</span></a></code></pre></div>
-<pre><code>##                                                Group1       Group2
-## HALLMARK_COMPLEMENT                      1.362660e-06 1.000000e+00
-## HALLMARK_IL2_STAT5_SIGNALING             2.474256e-06 3.333099e-02
-## HALLMARK_DNA_REPAIR                      7.637311e-06 1.656575e-01
-## HALLMARK_UNFOLDED_PROTEIN_RESPONSE       3.147129e-05 1.381409e-03
-## HALLMARK_APICAL_SURFACE                  1.508095e-03 5.861109e-01
-## HALLMARK_BILE_ACID_METABOLISM            1.000000e+00 7.715670e-06
-## HALLMARK_NOTCH_SIGNALING                 1.000000e+00 1.000000e+00
-## HALLMARK_PEROXISOME                      1.000000e+00 1.000000e+00
-## HALLMARK_REACTIVE_OXIGEN_SPECIES_PATHWAY 1.000000e+00 1.000000e+00
-## HALLMARK_ANGIOGENESIS                    5.776566e-01 1.287544e-01
-##                                               Group3       Group4
-## HALLMARK_COMPLEMENT                      0.000711277 3.865785e-13
-## HALLMARK_IL2_STAT5_SIGNALING             0.002193161 6.427686e-04
-## HALLMARK_DNA_REPAIR                      0.044534864 1.195067e-03
-## HALLMARK_UNFOLDED_PROTEIN_RESPONSE       0.009422769 8.350102e-02
-## HALLMARK_APICAL_SURFACE                  1.000000000 1.000000e+00
-## HALLMARK_BILE_ACID_METABOLISM            0.003349134 9.274294e-01
-## HALLMARK_NOTCH_SIGNALING                 1.000000000 7.181930e-01
-## HALLMARK_PEROXISOME                      0.035581310 8.658554e-01
-## HALLMARK_REACTIVE_OXIGEN_SPECIES_PATHWAY 0.127759613 6.211821e-01
-## HALLMARK_ANGIOGENESIS                    1.000000000 2.130849e-01</code></pre>
+<pre><code>##                                          Group1       Group2       Group3
+## HALLMARK_IL2_STAT5_SIGNALING       2.858190e-24 2.489271e-13 3.451510e-15
+## HALLMARK_DNA_REPAIR                2.858190e-24 1.739767e-13 1.286641e-12
+## HALLMARK_COMPLEMENT                3.985134e-23 6.949503e-04 6.821492e-16
+## HALLMARK_UNFOLDED_PROTEIN_RESPONSE 1.362655e-20 2.577150e-18 1.687982e-12
+## HALLMARK_APICAL_SURFACE            1.594960e-13 5.830539e-08 1.000000e+00
+## HALLMARK_ANGIOGENESIS              3.003553e-01 5.697704e-01 1.000000e+00
+## HALLMARK_HEDGEHOG_SIGNALING        5.642487e-01 7.318339e-01 1.000000e+00
+## HALLMARK_KRAS_SIGNALING_UP         6.589077e-01 1.000000e+00 4.406075e-02
+## HALLMARK_COAGULATION               6.589077e-01 2.080345e-18 1.130707e-11
+## HALLMARK_INFLAMMATORY_RESPONSE     1.000000e+00 1.000000e+00 3.631134e-01
+##                                          Group4
+## HALLMARK_IL2_STAT5_SIGNALING       1.942653e-16
+## HALLMARK_DNA_REPAIR                6.709712e-24
+## HALLMARK_COMPLEMENT                1.366256e-34
+## HALLMARK_UNFOLDED_PROTEIN_RESPONSE 2.144160e-08
+## HALLMARK_APICAL_SURFACE            1.000000e+00
+## HALLMARK_ANGIOGENESIS              6.462100e-01
+## HALLMARK_HEDGEHOG_SIGNALING        7.856739e-01
+## HALLMARK_KRAS_SIGNALING_UP         3.417063e-01
+## HALLMARK_COAGULATION               4.939474e-05
+## HALLMARK_INFLAMMATORY_RESPONSE     2.460747e-03</code></pre>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/names">names</a></span>(h.sets)[sets.to.use[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]] <span class="co">#Compare to the simulate sets we created</span></a></code></pre></div>
 <pre><code>## [1] "HALLMARK_APICAL_SURFACE"           
 ## [2] "HALLMARK_COMPLEMENT"               
