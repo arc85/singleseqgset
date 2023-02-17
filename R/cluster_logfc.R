@@ -16,7 +16,8 @@ if (is.factor(cluster.ids)==F) {
   cluster.ids <- as.factor(cluster.ids)
 }
 
-if (!class(expr.mat)=="dgCMatrix") {
+if (!inherits(expr.mat, "dgCMatrix")) {
+#if (!class(expr.mat)=="dgCMatrix") {
 	expr.mat <- Matrix(expr.mat,sparse=TRUE)
 }
 
