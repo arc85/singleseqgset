@@ -18,7 +18,8 @@ wmw_gsea <- function(expr.mat,cluster.cells,log.fc.cluster,gene.sets)
 
 {
 
-if (!class(expr.mat)=="matrix") {
+if (!inherits(expr.mat, "matrix")) {
+#if (!class(expr.mat)=="matrix") {
 	expr.mat <- as.matrix(expr.mat)
 }
 
